@@ -77,6 +77,19 @@ function App() {
 
   const userInitial = user?.displayName?.[0] || user?.email?.[0]?.toUpperCase() || '?';
 
+  // Close all dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-dropdown]')) {
+        setShowNotifications(false);
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col font-sans relative overflow-x-hidden md:cursor-none">
       <div className="hidden md:block"><Cursor size={70} /></div>
@@ -153,6 +166,7 @@ function App() {
           <div className="flex items-center gap-4 text-[var(--outline)] relative">
             {/* Notification bell */}
             <button 
+               data-dropdown
                onClick={() => {
                  setShowNotifications(!showNotifications);
                  if (unreadCount > 0) markAllAsRead();
@@ -168,7 +182,7 @@ function App() {
             </button>
             
             {/* User avatar with dropdown */}
-            <div className="relative">
+            <div className="relative" data-dropdown>
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
                 className="shrink-0 focus:outline-none"
@@ -211,7 +225,7 @@ function App() {
 
         {/* Notification dropdown */}
         {showNotifications && (
-          <div className="fixed sm:absolute top-14 sm:top-auto right-2 sm:right-4 w-[calc(100vw-16px)] sm:w-80 bg-[var(--surface-container-high)] border border-[var(--border)] shadow-2xl rounded-xl z-[60] overflow-hidden flex flex-col max-h-[70vh]">
+          <div data-dropdown className="fixed sm:absolute top-14 sm:top-auto right-2 sm:right-4 w-[calc(100vw-16px)] sm:w-80 bg-[var(--surface-container-high)] border border-[var(--border)] shadow-2xl rounded-xl z-[60] overflow-hidden flex flex-col max-h-[70vh]">
             <div className="px-4 py-3 border-b border-[var(--border)] font-bold text-[var(--on-surface)] flex justify-between items-center shrink-0">
               <span>Notifications</span>
               {notifications.length > 0 && <span className="text-xs text-[var(--outline)]">{notifications.length} total</span>}

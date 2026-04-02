@@ -4,10 +4,10 @@ import ScoreCard from '../components/ScoreCard';
 import IssueList from '../components/IssueList';
 import RefactorView from '../components/RefactorView';
 import { useAnalyzer } from '../hooks/useAnalyzer';
-import { Zap } from 'lucide-react';
+import { Zap, Cpu, Cloud, AlertCircle } from 'lucide-react';
 
 const Analyzer: React.FC = () => {
-  const { code, setCode, results, loading, analyzeCode, applyRefactor } = useAnalyzer();
+  const { code, setCode, results, loading, error, analyzeCode, applyRefactor, provider, setProvider, intent, setIntent } = useAnalyzer();
   const [language, setLanguage] = useState('python');
 
   // Auto-update language if the analyzer detected a different one
@@ -48,8 +48,52 @@ const Analyzer: React.FC = () => {
       </div>
 
       {/* Middle Column: Analysis */}
-      <div className="w-full lg:w-[380px] xl:w-[400px] flex flex-col gap-4 md:gap-6 overflow-y-auto lg:pr-2 custom-scrollbar pb-4 lg:pb-24 relative shrink-0">
+      <div className="w-full lg:w-[380px] xl:w-[400px] flex flex-col gap-4 md:gap-6 overflow-y-auto lg:pr-2 custom-scrollbar pb-4 lg:pb-28 relative shrink-0">
         <h2 className="text-xl md:text-2xl font-bold font-sans tracking-tight pt-2">Analysis Overview</h2>
+
+        {/* Provider Toggle */}
+        <div className="flex items-center gap-2 bg-[var(--surface-container-high)] rounded-xl p-1 border border-[var(--border)]">
+          <button
+            onClick={() => setProvider('ollama')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              provider === 'ollama'
+                ? 'bg-[var(--primary)]/20 text-[var(--primary)] border border-[var(--primary)]/30'
+                : 'text-[var(--outline)] hover:text-white'
+            }`}
+          >
+            <Cpu size={12} /> Local (Ollama)
+          </button>
+          <button
+            onClick={() => setProvider('gemini')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              provider === 'gemini'
+                ? 'bg-[var(--secondary)]/20 text-[var(--secondary)] border border-[var(--secondary)]/30'
+                : 'text-[var(--outline)] hover:text-white'
+            }`}
+          >
+            <Cloud size={12} /> Cloud (Gemini)
+          </button>
+        </div>
+
+        {/* Intent / RAG Input */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs text-[var(--outline)] font-semibold uppercase tracking-wider">Intent (optional RAG filter)</label>
+          <input
+            type="text"
+            value={intent}
+            onChange={(e) => setIntent(e.target.value)}
+            placeholder="e.g. optimize database queries, fix memory leaks..."
+            className="w-full px-3 py-2 rounded-xl bg-[var(--surface-container-high)] border border-[var(--border)] text-sm text-[var(--foreground)] placeholder:text-[var(--outline)]/60 outline-none focus:border-[var(--primary)]/50 focus:ring-1 focus:ring-[var(--primary)]/20 transition-all"
+          />
+        </div>
+
+        {/* Error State */}
+        {error && (
+          <div className="flex items-start gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+            <AlertCircle size={14} className="shrink-0 mt-0.5" />
+            <span>{error}</span>
+          </div>
+        )}
         
         {/* Score Cards */}
         <div className="grid grid-cols-2 gap-3 md:gap-4">

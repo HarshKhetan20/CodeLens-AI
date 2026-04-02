@@ -7,6 +7,8 @@ export const useAnalyzer = () => {
   const [results, setResults] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [provider, setProvider] = useState<'gemini' | 'ollama'>('ollama'); // Defaulted to Ollama for local
+  const [intent, setIntent] = useState<string>(''); // For RAG Agent Isolation
   const { addNotification } = useNotifications();
 
   const analyzeCode = async (language: string = 'python') => {
@@ -16,7 +18,7 @@ export const useAnalyzer = () => {
     setError(null);
     
     try {
-      const data = await analyzeCodeApi(code, language);
+      const data = await analyzeCodeApi(code, language, provider, intent);
       setResults(data);
       addNotification(`Analysis complete for ${language}. Found ${data.issues?.length || 0} issues.`);
       
@@ -34,12 +36,8 @@ export const useAnalyzer = () => {
       });
       localStorage.setItem('codelens_history', JSON.stringify(history.slice(0, 50))); // Keep last 50
     } catch (err: any) {
-      if (err.message === "MISSING_API_KEY") {
-        setError("Missing VITE_GEMINI_API_KEY. Please add your Google Gemini API key to frontend/.env");
-      } else {
-        setError('Analysis failed. Ensure your code is valid and try again.');
-        console.error(err);
-      }
+      setError(err.message || 'Analysis failed. Ensure your code is valid and try again.');
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -58,6 +56,10 @@ export const useAnalyzer = () => {
     results,
     loading,
     error,
+    provider,
+    setProvider,
+    intent,
+    setIntent,
     analyzeCode,
     applyRefactor
   };
