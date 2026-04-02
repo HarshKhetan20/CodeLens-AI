@@ -24,14 +24,10 @@ class KeyManager {
    *   gemma-3-27b-it          → Gemma 3 27B            (30 RPM / 14.4K RPD) ← emergency
    */
   private models: string[] = [
-    'gemini-2.5-flash',               // Best quality — use first
-    'gemini-2.5-pro',
-    'gemini-2.5-flash-lite',               // Gemini 3 Flash equivalent
-    'gemini-2.0-flash',
-    'gemini-embedding-1', // Lighter 2.5 flash
-
-    'gemini-2.0-flash-lite',          // Highest RPM (15), best rate-limit fallback
-    'gemma-3-27b-it',                 // Emergency fallback — 30 RPM, 14.4K RPD
+    'gemini-2.5-flash',               // Best quality (5 RPM / 20 RPD)
+    'gemini-2.0-flash',               // Good fallback (5 RPM / 20 RPD)
+    'gemini-2.0-flash-lite',          // Best free-tier fallback (15 RPM / 500 RPD)
+    'gemma-3-27b-it',                 // Emergency fallback (30 RPM / 14.4K RPD)
   ];
   private currentModelIndex: number = 0;
 

@@ -116,14 +116,25 @@ Do NOT add excessive inline comments to refactored_code.`;
         console.log(`[Gemini] ✓ Response: ${text.length} chars`);
         return text;
       } catch (err: any) {
-        const isRateLimit =
+        const shouldRotate =
           err.status === 429 ||
+          err.status === 503 ||
+          err.status === 404 ||
+          err.status === 400 ||
           err.message?.includes('RESOURCE_EXHAUSTED') ||
           err.message?.includes('quota') ||
-          err.message?.includes('exhausted');
+          err.message?.includes('exhausted') ||
+          err.message?.includes('not found') ||
+          err.message?.includes('not supported') ||
+          err.message?.includes('high demand') ||
+          err.message?.includes('Service Unavailable');
 
-        if (isRateLimit) {
-          console.warn(`[Gemini] ⚠ Rate limit on ...${currentKey.slice(-6)} / ${currentModel}. Rotating...`);
+        if (shouldRotate) {
+          const reason = err.status === 429 ? 'Rate limited' 
+            : err.status === 503 ? 'Service unavailable'
+            : err.status === 404 ? 'Model not found'
+            : 'Error';
+          console.warn(`[Gemini] ⚠ ${reason} on ...${currentKey.slice(-6)} / ${currentModel}. Rotating...`);
           keyManager.reportExhaustion();
           attempts++;
         } else {
