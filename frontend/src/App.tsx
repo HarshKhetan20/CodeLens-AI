@@ -1,6 +1,6 @@
 import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import { Bell, CheckCircle2, Menu, X as XIcon, LogOut } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNotifications } from './contexts/NotificationContext';
 import { useAuth } from './contexts/AuthContext';
 import Home from './pages/Home';
@@ -10,6 +10,24 @@ import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Cursor from './components/ui/inverted-cursor';
 import ParticleBackground from './components/ui/particle-background';
+import { GooeyLoader } from './components/ui/loader-10';
+
+// Global transition loader
+function GlobalLoader() {
+  return (
+    <div className="flex-1 flex justify-center items-center h-full relative z-[100] w-full min-h-[60vh] flex-col gap-12">
+      <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] animate-pulse">
+        CodeLensAI is Loading
+      </h2>
+      <GooeyLoader
+        primaryColor="var(--primary)"
+        secondaryColor="var(--secondary)"
+        borderColor="transparent"
+        className="scale-75 md:scale-100"
+      />
+    </div>
+  );
+}
 
 // Protected route wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -37,6 +55,25 @@ function App() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+
+  const [isNavigating, setIsNavigating] = useState(false);
+  const prevPathRef = useRef(location.pathname);
+
+  // Trigger loading screen between Home and Analyzer, and anytime switching back to Home
+  useEffect(() => {
+    if (location.pathname !== prevPathRef.current) {
+      const p = prevPathRef.current;
+      prevPathRef.current = location.pathname;
+      
+      const isFromHomeToAnalyzer = p === '/' && location.pathname === '/analyzer';
+      const isFromAnywhereToHome = p !== '/' && location.pathname === '/';
+
+      if (isFromHomeToAnalyzer || isFromAnywhereToHome) {
+        setIsNavigating(true);
+        setTimeout(() => setIsNavigating(false), 3000); // 3 seconds as requested
+      }
+    }
+  }, [location.pathname]);
 
   const userInitial = user?.displayName?.[0] || user?.email?.[0]?.toUpperCase() || '?';
 
@@ -213,14 +250,18 @@ function App() {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col relative z-10">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/analyzer" element={<ProtectedRoute><Analyzer /></ProtectedRoute>} />
-          <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-        </Routes>
+      <main className="flex-1 flex flex-col relative z-10 w-full min-h-0">
+        {isNavigating ? (
+          <GlobalLoader />
+        ) : (
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/analyzer" element={<ProtectedRoute><Analyzer /></ProtectedRoute>} />
+            <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          </Routes>
+        )}
       </main>
     </div>
   );
