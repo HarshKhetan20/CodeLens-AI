@@ -1,6 +1,7 @@
 export const analyzeCodeApi = async (code: string, language: string = 'python', provider: string = 'gemini', intent?: string) => {
   try {
-    const response = await fetch('http://localhost:3001/api/analyze', {
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    const response = await fetch(`${API_BASE}/api/analyze`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -15,11 +16,12 @@ export const analyzeCodeApi = async (code: string, language: string = 'python', 
 
     if (!response.ok) {
       let errText = "Unknown Server Error";
+      const clonedResponse = response.clone();
       try {
         const errJson = await response.json();
-        errText = errJson.error;
+        errText = errJson.error || JSON.stringify(errJson);
       } catch (e) {
-        errText = await response.text();
+        errText = await clonedResponse.text();
       }
       throw new Error(errText);
     }
