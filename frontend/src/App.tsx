@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import Cursor from './components/ui/inverted-cursor';
 import ParticleBackground from './components/ui/particle-background';
 import { GooeyLoader } from './components/ui/loader-10';
+import Footer from './components/Footer';
 
 // Global transition loader
 function GlobalLoader() {
@@ -277,6 +278,9 @@ function App() {
           </Routes>
         )}
       </main>
+
+      {/* Global Footer — hidden during transition loading */}
+      {!isNavigating && <Footer />}
     </div>
   );
 }

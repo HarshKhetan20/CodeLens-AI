@@ -264,16 +264,7 @@ const Home: React.FC = () => {
         </Link>
       </div>
       
-      <footer className="w-full border-t border-[var(--border)] mt-8 pt-6 md:pt-8 pb-8 md:pb-12 flex flex-col md:flex-row justify-between items-center px-4 md:px-8 text-sm text-[var(--outline)] gap-4">
-        <div>
-          <span className="text-white font-bold mr-2">CodeLens AI</span>
-          <span>© 2026 CodeLens AI. Built for the kinetic observatory.</span>
-        </div>
-        <div className="flex gap-6 mt-4 md:mt-0">
-          <a href="#" className="hover:text-white transition-colors">Privacy</a>
-          <a href="#" className="hover:text-white transition-colors">Terms</a>
-        </div>
-      </footer>
+
     </div>
   );
 };

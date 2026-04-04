@@ -24,6 +24,14 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ code, onChange, language = 'pyt
         lineNumbersMinChars: 4,
         overviewRulerLanes: 0,
         renderLineHighlight: 'all',
+        wordWrap: 'off',
+        scrollbar: {
+          vertical: 'auto',
+          horizontal: 'auto',
+          verticalScrollbarSize: 8,
+          horizontalScrollbarSize: 8,
+          useShadows: false,
+        },
       }}
       loading={<div className="flex bg-[var(--surface-container)] w-full h-full items-center justify-center text-[var(--outline)]">Loading Editor...</div>}
     />

@@ -31,6 +31,14 @@ const RefactorView: React.FC<RefactorViewProps> = ({ refactoredCode, language = 
         padding: { top: 16, bottom: 64 }, // extra bottom padding for action buttons area
         lineNumbersMinChars: 4,
         overviewRulerLanes: 0,
+        wordWrap: 'off',
+        scrollbar: {
+          vertical: 'auto',
+          horizontal: 'auto',
+          verticalScrollbarSize: 8,
+          horizontalScrollbarSize: 8,
+          useShadows: false,
+        },
       }}
     />
   );
